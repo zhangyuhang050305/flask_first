@@ -3,18 +3,21 @@
 1.数据库配置：为了在项目中用来存储新闻数据以及用户数据的
 2.redis配置：缓存访问频率高的内容，存储session信息，图片验证码，短信验证码
 3.session配置:将来用来保存用户的登录信息
-4.csrf配置
+4.csrf配置:保护app，防止csrf攻击
+校验的请求方式：POST,PUT,DELETE,PATCH
+会修改数据（危险请求）→ 必须校验 CSRF
 """
 from datetime import timedelta
 
-from flask import Flask, session
 """
 Flask-SQLAlchemy = 专门给 Flask 封装的简化版（对 SQLAlchemy 做了包装）
 Flask-SQLAlchemy = 套了一层 Flask 皮肤的 SQLAlchemy
 """
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 import redis
 from flask_session import Session
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
 
@@ -63,7 +66,10 @@ redis_store = redis.Redis(
 # 创建Session对象，读取APP中session配置信息
 Session(app)
 
-@app.route('/')
+# 使用csrfprotect保护app
+CSRFProtect(app)
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
     # 测试redis存取数据
     redis_store.set('name','laowang')
