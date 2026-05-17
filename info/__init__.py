@@ -8,7 +8,9 @@ import redis
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from config import config_dict
-from info.modules.index import index_blue
+
+# 定义redis_store变量
+redis_store = None
 
 # 定义工厂方法
 def create_app(config_name):
@@ -31,6 +33,7 @@ def create_app(config_name):
     不加：输出：b'张三'  → 你还要自己转字符串，很麻烦
     加：输出：'张三'  ✅ 直接用
     """
+    global redis_store
     redis_store = redis.Redis(
         host=config.REDIS_HOST,
         port=config.REDIS_PORT,
@@ -45,6 +48,7 @@ def create_app(config_name):
     CSRFProtect(app)
 
     # 将首页蓝图，index注册到app中
-    app.register_blueprint(index_blue, url_prefix='/index')
+    from info.modules.index import index_blue
+    app.register_blueprint(index_blue)
 
     return app
