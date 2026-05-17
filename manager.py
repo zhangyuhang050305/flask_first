@@ -8,8 +8,7 @@
 from info import create_app
 
 # 调用方法获取app
-app = create_app('develop')
-
+app = create_app('product')
 
 
 if __name__ == '__main__':

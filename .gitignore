@@ -1,4 +1,6 @@
 .idea/
 .venv/
-.pyc[cod]
+.py[cod]
 logs/log*
+
+__pycache__/
