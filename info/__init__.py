@@ -2,6 +2,9 @@
 Flask-SQLAlchemy = 专门给 Flask 封装的简化版（对 SQLAlchemy 做了包装）
 Flask-SQLAlchemy = 套了一层 Flask 皮肤的 SQLAlchemy
 """
+import logging
+from logging.handlers import RotatingFileHandler
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import redis
@@ -14,6 +17,9 @@ redis_store = None
 
 # 定义工厂方法
 def create_app(config_name):
+    # 调用日志方法，记录程序运行信息
+    log_file()
+
     app = Flask(__name__)
 
     # 根据传入的配置类名称，取出对应的配置类
@@ -52,3 +58,15 @@ def create_app(config_name):
     app.register_blueprint(index_blue)
 
     return app
+
+def log_file():
+    # 设置日志的记录等级，常见有四种，大小关系：DEBUG<INFO<WARNING<ERROR
+    logging.basicConfig(level=logging.DEBUG)  # 调试debug级
+    # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小、保存的日志文件个数上限
+    file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
+    # 创建日志记录的格式 日志等级 输入日志信息的文件名 行数 日志信息
+    formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
+    # 为刚创建的日志记录器设置日志记录格式
+    file_log_handler.setFormatter(formatter)
+    # 为全局的日志工具对象（flask app使用的）添加日志记录器
+    logging.getLogger().addHandler(file_log_handler)

@@ -8,7 +8,7 @@
 from info import create_app
 
 # 调用方法获取app
-app = create_app('development')
+app = create_app('develop')
 
 
 

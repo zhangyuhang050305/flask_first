@@ -35,7 +35,7 @@ class TestConfig(Config):
 
 # 提供一个统一的访问入口
 config_dict = {
-    'development': DevelopConfig,
-    'production': ProductConfig,
+    'develop': DevelopConfig,
+    'product': ProductConfig,
     'test': TestConfig
 }
