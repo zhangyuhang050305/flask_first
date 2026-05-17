@@ -8,6 +8,7 @@ import redis
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from config import config_dict
+from info.modules.index import index_blue
 
 # 定义工厂方法
 def create_app(config_name):
@@ -42,5 +43,8 @@ def create_app(config_name):
 
     # 使用csrfprotect保护app
     CSRFProtect(app)
+
+    # 将首页蓝图，index注册到app中
+    app.register_blueprint(index_blue, url_prefix='/index')
 
     return app
