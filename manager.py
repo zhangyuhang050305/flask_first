@@ -5,11 +5,15 @@
 3.session配置:将来用来保存用户的登录信息
 4.csrf配置:保护app，防止csrf攻击
 """
-from info import create_app
+from info import create_app,db,models # 导入models的作用是让整个程序知道models的存在
+
+from flask_migrate import Migrate
 
 # 调用方法获取app
-app = create_app('product')
+app = create_app('develop')
 
+# 使用Migrate关联app，db
+migrate = Migrate(app,db)
 
 if __name__ == '__main__':
     app.run()
