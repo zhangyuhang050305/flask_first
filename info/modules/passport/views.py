@@ -173,7 +173,7 @@ def register():
 
     # 8.设置用户对象的属性
     user.nick_name = mobile
-    user.password_hash = password
+    user.password = password
     user.mobile = mobile
     user.signature = "该用户很懒，什么都没有留下"
 

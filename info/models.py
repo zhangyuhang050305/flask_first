@@ -32,7 +32,7 @@ class User(BaseModel, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # 用户编号
     nick_name = db.Column(db.String(32), unique=True, nullable=False)  # 用户昵称
-    password_hash = db.Column(db.String(128), nullable=False)  # 加密的密码
+    password_hash = db.Column(db.String(256), nullable=False)  # 加密的密码
     mobile = db.Column(db.String(11), unique=True, nullable=False)  # 手机号
     avatar_url = db.Column(db.String(256))  # 用户头像路径
     last_login = db.Column(db.DateTime, default=datetime.now)  # 最后一次登录时间
@@ -58,15 +58,18 @@ class User(BaseModel, db.Model):
     # 当前用户所发布的新闻
     news_list = db.relationship('News', backref='user', lazy='dynamic')
 
+    # 使用@property装饰的方法，可以当作属性来使用
     @property
     def password(self):
         raise AttributeError("当前属性不可读")
-
+    # @password.setter给password方法，加了一个设置方法，比如：user。password= ‘haha’
     @password.setter
     def password(self, value):
+        # 使用了系统的generate_password_hash方法,使用的是scrypt算法加密
         self.password_hash = generate_password_hash(value)
 
     def check_passowrd(self, password):
+        # 系统提供的校验密码的方式，check_passwwprd_hash，传递密文和明文，返回True或者False
         return check_password_hash(self.password_hash, password)
 
     def to_dict(self):
