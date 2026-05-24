@@ -68,7 +68,7 @@ class User(BaseModel, db.Model):
         # 使用了系统的generate_password_hash方法,使用的是scrypt算法加密
         self.password_hash = generate_password_hash(value)
 
-    def check_passowrd(self, password):
+    def check_password(self, password):
         # 系统提供的校验密码的方式，check_passwwprd_hash，传递密文和明文，返回True或者False
         return check_password_hash(self.password_hash, password)
 

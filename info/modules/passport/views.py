@@ -4,11 +4,49 @@ import re
 
 from . import passport_blue
 from ...utils.captcha.captcha import captcha
-from flask import request, current_app, make_response, jsonify
+from flask import request, current_app, make_response, jsonify, session
 from info import redis_store,constants,db
 from info.sms import CCP
 from info.utils.response_code import RET
 from info.models import User
+
+# 登录用户
+# 请求路径：/passport/login
+# 请求方式：POST
+# 请求参数：mobile,password
+# 返回值：errno,errmsg
+@passport_blue.route('/login', methods=['POST'])
+def login():
+    # 1.获取参数
+    dict_data = request.json
+    mobile = dict_data.get('mobile')
+    password = dict_data.get('password')
+
+    # 2.校验参数，为空校验
+    if not all([mobile, password]):
+        return jsonify(errno=RET.PARAMERR,errmsg="参数不全")
+
+    # 3.通过用户手机号，到数据库查询用户对象
+    try:
+        user = User.query.filter(User.mobile==mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg="获取用户失败")
+
+    # 4.判断用户是否存在
+    if not user:
+        return jsonify(errno=RET.NODATA,errmsg="该用户不存在")
+
+    # 5.校验密码是否正确
+    if not user.check_password(password):
+        return jsonify(errno=RET.DATAERR,errmsg="密码错误")
+
+    # 6.将用户的登录信息保存到session中
+    session['user_id'] = user.id
+
+    # 7.返回一个响应
+    return jsonify(errno=RET.OK,errmsg="登录成功")
+
 
 # 功能：获取图片验证码
 # 请求路径：/passport/image_code
