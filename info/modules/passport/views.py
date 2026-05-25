@@ -10,6 +10,17 @@ from info.sms import CCP
 from info.utils.response_code import RET
 from info.models import User
 
+# 退出登录
+# 请求路径：/password/logout
+# 请求参数：无
+# 返回值：errno,errmsg
+@passport_blue.route('/logout',methods=['POST'])
+def logout():
+    # 1.清楚session信息
+    session.pop("user_id",None)
+    # 2.返回响应
+    return jsonify(errno=RET.OK,errmsg="退出成功")
+
 # 登录用户
 # 请求路径：/passport/login
 # 请求方式：POST
