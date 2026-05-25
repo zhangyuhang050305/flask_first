@@ -1,6 +1,7 @@
 import json
 import random
 import re
+from datetime import datetime
 
 from . import passport_blue
 from ...utils.captcha.captcha import captcha
@@ -54,6 +55,14 @@ def login():
 
     # 6.将用户的登录信息保存到session中
     session['user_id'] = user.id
+
+    # 7.记录用户最后一次登录的时间
+    user.last_login = datetime.now()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(e)
 
     # 7.返回一个响应
     return jsonify(errno=RET.OK,errmsg="登录成功")
