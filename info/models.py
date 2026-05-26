@@ -101,9 +101,9 @@ class News(BaseModel, db.Model):
     __tablename__ = "info_news"
 
     id = db.Column(db.Integer, primary_key=True)  # 新闻编号
-    title = db.Column(db.String(256), nullable=False)  # 新闻标题
+    title = db.Column(db.Text, nullable=False)  # 新闻标题
     source = db.Column(db.String(64), nullable=False)  # 新闻来源
-    digest = db.Column(db.String(512), nullable=False)  # 新闻摘要
+    digest = db.Column(db.Text, nullable=False)  # 新闻摘要
     content = db.Column(db.Text, nullable=False)  # 新闻内容
     clicks = db.Column(db.Integer, default=0)  # 浏览量
     index_image_url = db.Column(db.String(256))  # 新闻列表图片路径

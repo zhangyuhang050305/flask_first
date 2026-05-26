@@ -11,6 +11,7 @@ import redis
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from config import config_dict
+from info.utils.commons import hot_news_filter
 
 # 定义redis_store变量
 redis_store = None
@@ -64,13 +65,17 @@ def create_app(config_name):
     from info.modules.passport import passport_blue
     app.register_blueprint(passport_blue)
 
+    # 将函数添加到系统默认的过滤器列表种
+    # 参数1：函数的名字 参数二：过滤器的名字
+    app.add_template_filter(hot_news_filter,"my_filter")
+
     # 使用请求钩子拦截所有的请求，通过在cookie中设置csrf_token
     @app.after_request
     def after_request(resp):
         # after_request（请求处理之后），参数和操作对象都是 response（响应）
-        csrf_tkoen = generate_csrf()
+        csrf_token = generate_csrf()
         # 将csrf_token设置到cookie中
-        resp.set_cookie('csrf_tkoen', csrf_tkoen)
+        resp.set_cookie('csrf_token', csrf_token)
         # 返回响应
         return resp
 
