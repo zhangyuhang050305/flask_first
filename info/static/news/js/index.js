@@ -67,7 +67,7 @@ function updateNewsData() {
         "cid": currentCid,
         'per_page': 5
     }
-    /*
+
     $.get("/newslist", params, function (resp) {
         // 设置 `数据正在查询数据` 变量为 false，以便下次上拉加载
         house_data_querying = false
@@ -82,8 +82,8 @@ function updateNewsData() {
             cur_page += 1
 
             // 显示数据
-            for (var i=0;i<resp.newsList.length;i++) {
-                var news = resp.newsList[i]
+            for (var i=0;i<resp.news_list.length;i++) {
+                var news = resp.news_list[i]
                 var content = '<li>'
                 content += '<a href="/news/'+news.id+'" class="news_pic fl"><img src="' + news.index_image_url + '?imageView2/1/w/170/h/170"></a>'
                 content += '<a href="/news/'+news.id+'" class="news_title fl">' + news.title + '</a>'
@@ -97,5 +97,5 @@ function updateNewsData() {
             }
         }
     })
-    */
+
 }

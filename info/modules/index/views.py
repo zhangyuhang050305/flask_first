@@ -1,10 +1,63 @@
 import logging
-from flask import current_app, render_template, session, jsonify
+from flask import current_app, render_template, session, jsonify, request
 
 from info import redis_store
 from info.modules.index import index_blue
 from info.models import User, News, Category
 from info.utils.response_code import RET
+
+# 首页新闻列表
+# 请求路径：/newslist
+# 请求方式：GET
+# 请求参数：cid,page.per_page
+# 返回值：data数据
+@index_blue.route('/newslist')
+def newslist():
+    # 1.获取参数
+    cid = request.args.get("cid","1")
+    page = request.args.get("page","1")
+    per_page = request.args.get("per_page","10")
+
+    # 2.参数类型转换
+    try:
+        cid = int(cid)
+        page = int(page)
+        per_page = int(per_page)
+    except Exception as e:
+        cid = 1
+        page = 1
+        per_page = 10
+
+    # 3.分页查询
+    try:
+    #     if cid == 1:
+    #         # 新版的.paginate(page=page, per_page=per_page, error_out=False)必须以关键字的形式传递参数
+    #         paginate = News.query.filter().order_by(News.create_time.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    #     else:
+    #         paginate = News.query.filter(News.category_id==cid).order_by(News.create_time.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    #     filter = ""
+    #     if cid != 1:
+    #         filter = (News.category_id == cid)
+    #     paginate = News.query.filter(filter).order_by(News.create_time).paginate(page=page, per_page=per_page, error_out=False)
+        filter = []
+        if cid != 1:
+            filter.append(News.category_id == cid)
+        paginate = News.query.filter(*filter).order_by(News.create_time.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
+
+     # 4.获取到分页对象中的属性，当前页的对象列表
+    totalPage = paginate.pages
+    items = paginate.items
+
+    # 5.将对象列表转成字典列表
+    news_list = []
+    for news in items:
+        news_list.append(news.to_dict())
+
+    # 6.携带数据，返回响应
+    return jsonify(errno=RET.OK,errmsg="获取新闻成功",totalPage=totalPage,news_list=news_list)
 
 
 @index_blue.route('/',methods=['GET','POST'])
