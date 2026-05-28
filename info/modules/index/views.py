@@ -1,9 +1,10 @@
 import logging
-from flask import current_app, render_template, session, jsonify, request
+from flask import current_app, render_template, session, jsonify, request, g
 
 from info import redis_store
 from info.modules.index import index_blue
 from info.models import User, News, Category
+from info.utils.commons import user_login_data
 from info.utils.response_code import RET
 
 # 首页新闻列表
@@ -59,19 +60,19 @@ def newslist():
     # 6.携带数据，返回响应
     return jsonify(errno=RET.OK,errmsg="获取新闻成功",totalPage=totalPage,news_list=news_list)
 
-
 @index_blue.route('/',methods=['GET','POST'])
+@user_login_data
 def show_index():
-    # 1.获取用户的登录信息
-    user_id = session.get('user_id')
-
-    # 2.通过user_id取出用户的对象
-    user =None
-    if user_id:
-        try:
-            user = User.query.get(user_id)
-        except Exception as e:
-            current_app.logger.error(e)
+    # # 1.获取用户的登录信息
+    # user_id = session.get('user_id')
+    #
+    # # 2.通过user_id取出用户的对象
+    # user =None
+    # if user_id:
+    #     try:
+    #         user = User.query.get(user_id)
+    #     except Exception as e:
+    #         current_app.logger.error(e)
 
     # 3.查询热点数据，根据点击量，查询前十条新闻
     try:
@@ -99,7 +100,7 @@ def show_index():
 
     # 5.拼接用户数据，渲染页面
     data = {
-        "user_info":user.to_dict() if user else "",
+        "user_info":g.user.to_dict() if g.user else "",
         "news_list":news_list,
         "category_list":category_list
     }
